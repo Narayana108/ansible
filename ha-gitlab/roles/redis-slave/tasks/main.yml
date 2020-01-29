@@ -1,0 +1,17 @@
+---
+- name: Add 'chris lea' PPA for Redis
+  apt_repository: repo=ppa:chris-lea/redis-server
+  register: result
+
+- name: Install Redis
+  apt: pkg=redis-server state=latest
+  sudo: true
+
+- name: Ensure Redis is started
+  service: name=redis-server state=started enabled=yes
+  sudo: true
+
+- name: Copy Redis config
+  template: src=redis.conf.j2 dest=/etc/redis/redis.conf owner=root group=root mode=0644
+  sudo: true
+  notify: Redis Restart

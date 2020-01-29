@@ -1,0 +1,13 @@
+---
+- name: PSQL Stop
+  service: name=postgresql state=stopped enabled=yes
+  sudo: true
+
+- name: PSQL Restart
+  service: name=postgresql state=restarted enabled=yes
+  sudo: true
+
+- name: PSQL Start
+  service: name=postgresql state=started enabled=yes
+  sudo: true
+

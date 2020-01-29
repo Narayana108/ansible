@@ -1,0 +1,4 @@
+---
+  - name: PSQL Restart
+    service: name=postgresql state=restarted enabled=yes
+    sudo: true

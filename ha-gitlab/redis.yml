@@ -1,0 +1,12 @@
+---
+- hosts: master_local
+  become: true
+  gather_facts: yes
+  roles:
+    - redis-master
+
+- hosts: slave_local
+  become: true
+  roles:
+    - redis-slave
+

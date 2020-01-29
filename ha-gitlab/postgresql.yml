@@ -1,0 +1,14 @@
+---
+- hosts: master_local
+  become: true
+  gather_facts: no
+  vars:
+  roles:
+    - psql-master
+
+- hosts: slave_local
+  become: true
+  gather_facts: no
+  vars:
+  roles:
+    - psql-slave

@@ -1,2 +1,3 @@
 *.retry
-./server_admin/.vagrant
+./server_admin/.vagrant/
+./ha-gitlab/.vagrant/

@@ -1,0 +1,13 @@
+---
+- hosts: gitlab1_local
+  become: true
+  gather_facts: no
+  roles:
+    - common
+    - gitlab1
+
+- hosts: gitlab2_local
+  become: true
+  roles:
+    - common
+    - gitlab2

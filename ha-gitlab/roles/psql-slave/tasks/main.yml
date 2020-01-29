@@ -1,0 +1,58 @@
+---
+- name: Add Postgresql repository
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main
+    state: present
+
+- name: Add Postgersql Apt signing key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Install dependencies
+  apt:
+    pkg: "{{item}}"
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+    allow_unauthenticated: yes
+  with_items: ["python-psycopg2", "python-pycurl", "locales"]
+
+- name: Install Postgresql
+  apt: pkg=postgresql-9.6 state=latest  update_cache=yes
+  notify: PSQL Stop
+
+- name: Copy Postgresql config
+  template: 
+    src: postgresql.conf.j2 
+    dest: /etc/postgresql/9.6/main/postgresql.conf 
+    owner: postgres 
+    group: postgres 
+    mode: 0644
+
+- name: Delete main directory
+  file: path=/var/lib/postgresql/9.6/main state=absent
+
+- name: execute base backup
+  shell: |
+    export PGPASSWORD="{{ replica_password }}" && \
+    pg_basebackup -h {{ psql_master_ip  }} -U {{ replica_user }} -D /var/lib/postgresql/9.6/main \
+    -P -v --xlog-method=stream 2>&1
+
+    exit 0
+
+- name: Set file ownership
+  file:
+      path: /var/lib/postgresql/9.6/main
+      recurse: yes
+      owner: postgres   
+      group: postgres
+
+- name: Copy Postgresql recovery config
+  template: 
+    src: recovery.conf.j2 
+    dest: /var/lib/postgresql/9.6/main/recovery.conf 
+    owner: postgres 
+    group: postgres 
+    mode: 0600
+  notify: PSQL Start

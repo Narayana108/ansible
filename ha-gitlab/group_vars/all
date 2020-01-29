@@ -1,0 +1,44 @@
+### glusterfs-server
+glusterfs_hosts: "{{ groups.gluster_local }}"
+glusterfs_ppa_version: 4.1
+glusterfs_dir: "/gitlab-data/"
+
+### Gitlab
+gitlab_fqdn: "https://git.atma.co.za"
+glab_dir: "/var/opt/gitlab"
+sendgrid_address: ""
+sendgrid_user: ""
+sendgrid_password: ""
+s3_backup_bucket: "gitlab-backups"
+glusterfs_volumes: [backups, builds, git-data, shared, ssh, uploads]
+glusterfs_dns1: "172.10.0.10"
+glusterfs_dns2: "172.10.0.11"
+redis_host: "172.10.0.10"
+
+aws_region: "eu-west-1"
+aws_access_key_id: ""
+aws_secret_access_key: ""
+aws_bucket: "gitlab-backups"
+ssl_dir: "/home/ryan/Workspace/projects/ansible-gitlab-ha/roles/common/ssl"
+
+bitbucket_app_id: ""
+bitbucket_app_secret: ""
+ssl_domain: "atma.co.za"
+
+### Redis
+redis_master: 172.10.0.10
+redis_slave: 172.10.0.11
+redis_password: 123asd
+
+### PSQL
+psql_master_domain: 172.10.0.10
+psql_slave_domain: 172.10.0.11
+psql_master_ip: 172.10.0.10
+psql_slave_ip: 172.10.0.11
+gitlab1_ip: 172.10.0.40
+gitlab2_ip: 172.10.0.11
+psql_db: glab
+psql_user: glab
+psql_password: 123asd
+replica_user: replica
+replica_password: 123asd

@@ -1,0 +1,8 @@
+---
+- name: Install Dependencies
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - curl
+    - ca-certificates
+    - openssh-server
+    - glusterfs-client

@@ -2,7 +2,11 @@
 
 `-f 20` runs the playbook on 20 servers concurrently
 
-# Execute locally
+# High Available Gitlab Cluster
+[HA-Gitlab](./ha-gitlab/README.md)
+
+
+# Server Admin
 
 ## Check upgradable packages:
 - server_admin/check_updates.yml

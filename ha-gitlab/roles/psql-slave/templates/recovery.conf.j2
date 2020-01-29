@@ -1,0 +1,4 @@
+standby_mode = 'on'
+primary_conninfo = 'host={{ psql_master_ip }} port=5432 user={{ replica_user }} password={{ replica_password }} application_name=pgslave001'
+restore_command = 'cp /var/lib/postgresql/9.6/main/archive/%f %p'
+trigger_file = '/tmp/postgresql.trigger.5432'

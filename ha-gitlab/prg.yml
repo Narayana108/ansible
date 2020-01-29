@@ -1,0 +1,4 @@
+---
+- import_playbook: glusterfs-server.yml
+- import_playbook: redis.yml
+- import_playbook: postgresql.yml

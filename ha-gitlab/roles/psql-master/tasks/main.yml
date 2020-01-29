@@ -1,0 +1,69 @@
+---
+- name: Add Postgresql repository
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main
+    state: present
+
+- name: Add Postgersql Apt signing key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Install dependencies
+  apt:
+    pkg: "{{item}}"
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+    allow_unauthenticated: yes
+  with_items: ["python-psycopg2", "python-pycurl", "locales"]
+
+- name: Install Postgresql
+  apt: pkg=postgresql-9.6 state=latest  update_cache=yes
+  sudo: true
+
+- name: Create Gitlab DB
+  become: yes
+  become_user: postgres
+  postgresql_db:
+      name: "{{ psql_db }}"
+
+- name: Add Postgresql user
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    db: "{{ psql_db }}"
+    name: "{{ psql_user }}"
+    password: "{{ psql_password }}"
+    priv: "ALL"
+    role_attr_flags: SUPERUSER
+
+- name: Add replication user account
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: "{{ replica_user }}"
+    password: "{{ replica_password }}"
+    role_attr_flags: "LOGIN,REPLICATION"
+  notify: PSQL Restart
+
+- name: Copy Postgresql config
+  template: 
+    src: postgresql.conf.j2 
+    dest: /etc/postgresql/9.6/main/postgresql.conf 
+    owner: postgres 
+    group: postgres 
+    mode: 0644
+  sudo: true
+
+- name: Create replication directory
+  file:
+    path: /var/lib/postgresql/9.6/main/archive
+    owner: postgres
+    group: postgres
+    state: directory
+
+- name: Copy Postgresql hba config
+  template: src=pg_hba.conf.j2 dest=/etc/postgresql/9.6/main/pg_hba.conf owner=postgres group=postgres mode=0644
+  sudo: true
+  notify: PSQL Restart

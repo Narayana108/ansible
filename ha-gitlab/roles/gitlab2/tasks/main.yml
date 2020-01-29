@@ -1,0 +1,62 @@
+---
+- name: Download gitlab repo
+  get_url: url=https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh dest=/tmp/gitlab.deb.sh mode=0755 validate_certs=no
+
+- name: Install gitlab repo
+  shell: /tmp/gitlab.deb.sh
+
+- name: Install gitlab
+  apt: name=gitlab-ce state=latest update_cache=yes
+  notify: configure gitlab
+
+- name: Copy template
+  template: src=gitlab.rb.j2 dest=/etc/gitlab/gitlab.rb owner=root group=root mode=0600
+  notify: configure gitlab
+
+- name: mounting gluster volume backup
+  mount: 
+    name: "{{ glab_dir }}/backups"
+    src: "{{ glusterfs_dns1 }}:backups"
+    fstype: glusterfs 
+    opts: "defaults,acl,_netdev,backupvolfile-server={{ glusterfs_dns2 }}"
+    state: mounted
+
+- name: mounting gluster volume builds
+  mount: 
+    name: "{{ glab_dir }}/builds"
+    src: "{{ glusterfs_dns1 }}:builds"
+    fstype: glusterfs 
+    opts: "defaults,acl,_netdev,backupvolfile-server={{ glusterfs_dns2 }}"
+    state: mounted
+
+- name: mounting gluster volume git-data
+  mount: 
+    name: "{{ glab_dir }}/git-data"
+    src: "{{ glusterfs_dns1 }}:git-data"
+    fstype: glusterfs 
+    opts: "defaults,acl,_netdev,backupvolfile-server={{ glusterfs_dns2 }}"
+    state: mounted
+
+- name: mounting gluster volume shared
+  mount: 
+    name: "{{ glab_dir }}/gitlab-rails/shared"
+    src: "{{ glusterfs_dns1 }}:shared"
+    fstype: glusterfs 
+    opts: "defaults,acl,_netdev,backupvolfile-server={{ glusterfs_dns2 }}"
+    state: mounted
+
+- name: mounting gluster volume builds
+  mount: 
+    name: "{{ glab_dir }}/gitlab-ci/builds"
+    src: "{{ glusterfs_dns1 }}:builds"
+    fstype: glusterfs 
+    opts: "defaults,acl,_netdev,backupvolfile-server={{ glusterfs_dns2 }}"
+    state: mounted
+
+- name: mounting gluster volume uploads
+  mount: 
+    name: "{{ glab_dir }}/gitlab-rails/uploads"
+    src: "{{ glusterfs_dns1 }}:uploads"
+    fstype: glusterfs 
+    opts: "defaults,acl,_netdev,backupvolfile-server={{ glusterfs_dns2 }}"
+    state: mounted

@@ -1,0 +1,44 @@
+---
+#------------------------------------------------------------------------
+# localhost
+#------------------------------------------------------------------------
+
+# Gluster
+[gluster_local]
+172.10.0.10
+172.10.0.11
+172.10.0.12
+
+# Redis and PSQL
+[master_local]
+172.10.0.10
+
+[slave_local]
+172.10.0.11
+
+# Gitlab
+[gitlab1_local]
+172.10.0.40
+
+[gitlab2_local]
+172.10.0.41
+
+[gluster_local:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[master_local:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[slave_local:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[gitlab1_local:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[gitlab2_local:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key

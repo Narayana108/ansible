@@ -1,0 +1,31 @@
+---
+- name: Add PPA for GlusterFS
+  apt_repository:
+    repo: 'ppa:gluster/glusterfs-{{ glusterfs_ppa_version }}'
+    state: present
+    update_cache: yes
+
+- name: Install glusterfs-server
+  apt:
+    name: glusterfs-server
+
+- name: Create gluster mount directories
+  file:
+    path: "{{glusterfs_dir}}{{item}}"
+    owner: root
+    group: root
+    mode: 0755
+    recurse: yes
+    state: directory
+  with_items: "{{ glusterfs_volumes }}"
+
+- name: Create ssl volume and peer probe
+  gluster_volume:
+    state: present
+    name: "{{ item }}"
+    bricks: "{{ glusterfs_dir }}{{ item }}"
+    cluster: "{{ glusterfs_hosts | join(',') }}"
+    host: "{{ inventory_hostname }}"
+    force: yes
+  loop: "{{ glusterfs_volumes }}"
+  run_once: true
