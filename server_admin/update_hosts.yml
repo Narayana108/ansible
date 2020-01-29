@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: True
+  tasks:
+    - name: Update apt cache, upgrade packages & auto remove unused packages.
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        upgrade: dist
+        autoremove: yes
+    - name: Update apt cache, install the latest 'linux-generic' package.
+      apt:
+        name: linux-generic
+        state: latest
+        update_cache: yes
+    - name: Update apt cache, install the latest 'linux-image-generic' package.
+      apt:
+        name: linux-image-generic
+        state: latest
+        update_cache: yes
+    - name: Update apt cache, install the latest 'linux-headers-generic' package.
+      apt:
+        name: linux-headers-generic
+        state: latest
+        update_cache: yes

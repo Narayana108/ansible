@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: True
+  gather_facts: False
+  tasks:
+    - name: Check for upgradeable
+      become: True
+      apt:
+        upgrade: Yes
+      check_mode: True
+      register: upgradable
+
+    - name: Create local directory
+      local_action:
+        module: file
+        path: /tmp/upgradable-pkgs/
+        state: directory
+      become: False
+
+    - name: Write upgradable packages to file
+      #local_action: shell echo "{{ upgradable }}" >> /tmp/"{{ inventory_hostname }}"-upgradable-pkgs.log
+      local_action: copy content="{{ upgradable.stdout_lines }}" dest="/tmp/upgradable-pkgs/{{inventory_hostname}}.json"
+      become: False
+
+    #- name: Show me
+      #debug:
+        #msg: "{{ upgradable }}"

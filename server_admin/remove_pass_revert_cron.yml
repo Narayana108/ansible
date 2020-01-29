@@ -1,0 +1,13 @@
+- hosts: host01
+  gather_facts: no
+  become: true
+  tasks:
+    - name: remove password revert cron task
+      cron:
+        name: restore shadow
+        state: absent
+
+    - name: delete tmp shadow file
+      file:
+        path: /tmp/shadow
+        state: absent

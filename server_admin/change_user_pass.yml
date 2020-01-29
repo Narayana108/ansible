@@ -1,0 +1,45 @@
+- hosts: host01
+  become: true
+  gather_facts: False
+  vars:
+    user: "root"
+
+  vars_prompt:
+    # You may need 'apt-get install python-passlib' or 'pip install passlib' for vars_prompt encryption
+    - name: newhash
+      prompt: "new password"
+      private: yes
+      encrypt: "sha512_crypt" # 656000 rounds hardcoded in ansible :(
+      confirm: yes
+      salt_size: 8
+
+  pre_tasks:
+    - name: newhash sanity check
+      delegate_to: localhost
+      assert:
+        that:
+          - newhash is match("\$[a-z0-9-]+\$[0-9A-Za-z./+=,$-]+$")
+        msg: "{{ newhash }} doesn't look like /etc/shadow compatible hash"
+      run_once: yes
+      become: no
+
+  tasks:
+    - name: check target user existence
+      getent:
+        key: "{{ user }}"
+        database: passwd
+
+    - name: backup shadow file
+      command: cp /etc/shadow /tmp/shadow
+
+    - name: set cron for backup
+      cron:
+        name: restore shadow
+        hour: '3'
+        minute: '00'
+        job: "yes | cp /tmp/shadow /etc/"
+
+    - name: update password
+      user:
+        name: '{{user}}'
+        password: '{{newhash}}'
