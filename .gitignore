@@ -1,1 +1,2 @@
 *.retry
+./server_admin/.vagrant
